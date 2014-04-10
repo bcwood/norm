@@ -1,5 +1,7 @@
-Norm - (Yet Another) .Net object-relational mapper
+Norm 
 ==================================================
+
+(Yet Another) .Net object-relational mapper
 
 Overview
 -----------
@@ -9,9 +11,9 @@ Norm is an opinionated object-relational mapper (ORM). It relies on a specific s
 Methods
 ----------
 
-Norm includes 4 extension methods on the `IDbConnection` class: Select<T>, Insert, Update, Delete.
+Norm includes 4 extension methods on the `IDbConnection` class: [Select<T>](#select), [Insert](#insert), [Update](#update), [Delete](#delete).
 
-### Select<T>
+### <a name="select">Select<T>
 
 The `Select` method returns a mapped list of `T` objects matching the given `parameters`.
 
@@ -40,7 +42,7 @@ IEnumerable<Person> people = connection.Select<Person>();
 Person person = connection.Select<Person>(new { Id = 1 }).SingleOrDefault();
 ```
 
-### Insert
+### <a name="insert">Insert
 
 The `Insert` method inserts the object `obj`, and returns the `Id` of the newly inserted object.
 
@@ -60,7 +62,7 @@ person.Gender = 'M';
 person.Id = connection.Insert(p);
 ```
 
-### Update
+### <a name="update">Update
 
 The `Update` method updates an existing object `obj`, and returns `true` if the object was updated successfully, otherwise `false`.
 
@@ -80,7 +82,7 @@ person.Gender = 'F';
 connection.Update(person);
 ```
 
-### Delete
+### <a name="delete">Delete
 
 The `Delete` method deletes an existing object `obj`, and returns `true` if the object was deleted successfully, otherwise `false`.
 
@@ -102,5 +104,5 @@ connection.Delete(person);
 - Norm assumes that your object and property names map directly to your table and column names.
 - Norm uses the following naming conventions _(note that name-matching is **not** case sensitive)_:
   - The primary key field (required) is either `Id` or `<TypeName>Id`.
-  - The created timestamp (optional) is either `created`, `createdate`, or `createdon`. This field will automatically be set when a record is inserted.
-  - The updated timestamp (optional) is either `updated`, `updatedate`, or `updatedon`. This field will automatically be set when a record is updated.
+  - The created timestamp (optional) is either `Created`, `CreateDate`, or `CreatedOn`. This field will automatically be set when a record is inserted.
+  - The updated timestamp (optional) is either `Updated`, `UpdateDate`, or `UpdatedOn`. This field will automatically be set when a record is updated.
