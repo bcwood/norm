@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Norm
@@ -11,37 +12,32 @@ namespace Norm
         private static List<string> _updatedFields = new List<string> { "updated", "updatedate", "updatedon" };
 
         /// <summary>
-        /// Executes a select query on type T, using the optional <paramref name="parameters"/>.
+        /// Executes a select query on type T, using the optional <paramref name="expression"/>.
         /// </summary>
         /// <typeparam name="T">Type to query.</typeparam>
         /// <param name="connection">The database connection, which this method expects to already be open.</param>
-        /// <param name="parameters">Optional parameters for querying the type T.</param>
+        /// <param name="expression">Optional Expression for querying the type T.</param>
         /// <returns>Returns an enumerable list of T objects matching the select criteria.</returns>
-        public static IEnumerable<T> Select<T>(this IDbConnection connection, object parameters = null) where T : new()
+        public static IEnumerable<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> expression = null) where T : new()
         {
             IDbCommand command = connection.CreateCommand();
+            var queryBuilder = new QueryBuilder<T>();
 
-            string query = string.Format("select * from [{0}]", typeof(T).Name);
-
-            if (parameters != null)
+            if (expression != null)
             {
-                var wheres = new List<string>();
+                queryBuilder.Where(expression);
 
-                foreach (PropertyInfo property in parameters.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                foreach (string key in queryBuilder.Parameters.Keys)
                 {
-                    wheres.Add(string.Format("{0} = @{0}", property.Name));
+                    var parameter = command.CreateParameter();
+                    parameter.ParameterName = key;
+                    parameter.Value = queryBuilder.Parameters[key];
 
-                    var p = command.CreateParameter();
-                    p.ParameterName = property.Name;
-                    p.Value = property.GetValue(parameters, null);
-
-                    command.Parameters.Add(p);
+                    command.Parameters.Add(parameter);
                 }
-
-                query += string.Format(" where {0}", string.Join(" and ", wheres));
             }
 
-            command.CommandText = query;
+            command.CommandText = queryBuilder.ToSqlString();
 
             return command.ExecuteReader().Map<T>();
         }
@@ -55,10 +51,10 @@ namespace Norm
         public static int Insert(this IDbConnection connection, object obj)
         {
             IDbCommand command = connection.CreateCommand();
-            
+
             var fieldList = new List<string>();
             var valueList = new List<string>();
-            
+
             Type type = obj.GetType();
             PropertyInfo primaryKey = type.GetPrimaryKey();
 
@@ -119,7 +115,7 @@ namespace Norm
         {
             IDbCommand command = connection.CreateCommand();
             var setList = new List<string>();
-            
+
             Type type = obj.GetType();
             PropertyInfo primaryKey = type.GetPrimaryKey();
 
@@ -143,7 +139,7 @@ namespace Norm
 
                 var p = command.CreateParameter();
                 p.ParameterName = property.Name;
-                
+
                 // set updated field
                 if (_updatedFields.Contains(property.Name.ToLower()))
                 {

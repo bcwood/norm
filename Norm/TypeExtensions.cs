@@ -25,7 +25,7 @@ namespace Norm
 
         internal static PropertyInfo[] GetCachedProperties(this Type type)
         {
-            string cacheKey = type.Name;
+            string cacheKey = type.FullName;
 
             if (!_propertyCache.ContainsKey(cacheKey))
             {

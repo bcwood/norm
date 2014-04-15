@@ -38,18 +38,18 @@ namespace Norm.Tests
         [Category("Select")]
         public void Select_ById_ReturnsNotNull()
         {
-            Person p = _connection.Select<Person>(new { Id = VALID_ID }).SingleOrDefault();
+            Person person = _connection.Select<Person>(p => p.Id == VALID_ID).SingleOrDefault();
 
-            Assert.IsNotNull(p);
+            Assert.IsNotNull(person);
         }
 
         [Test]
         [Category("Select")]
         public void Select_ById_RecordNotExists_ReturnsNull()
         {
-            Person p = _connection.Select<Person>(new { Id = INVALID_ID }).SingleOrDefault();
+            Person person = _connection.Select<Person>(p => p.Id == INVALID_ID).SingleOrDefault();
 
-            Assert.IsNull(p);
+            Assert.IsNull(person);
         }
 
         [Test]
@@ -67,8 +67,10 @@ namespace Norm.Tests
         {
             for (int i = 1; i <= 500; i++)
             {
-                Person p = _connection.Select<Person>(new { Id = i }).SingleOrDefault();
-                Assert.IsNotNull(p);
+                int id = i;
+                Person person = _connection.Select<Person>(p => p.Id == id).SingleOrDefault();
+
+                Assert.IsNotNull(person);
             }
         }
 
@@ -80,22 +82,22 @@ namespace Norm.Tests
         [Category("Insert")]
         public void Insert_ReturnsNonZeroId()
         {
-            var p = Person.Random();
-            p.Id = _connection.Insert(p);
+            var person = Person.Random();
+            person.Id = _connection.Insert(person);
 
-            Assert.IsTrue(p.Id > 0);
+            Assert.IsTrue(person.Id > 0);
         }
 
         [Test]
         [Category("Insert")]
         public void Insert_GetById_ReturnsEqualObject()
         {
-            var p = Person.Random();
-            p.Id = _connection.Insert(p);
+            var person1 = Person.Random();
+            person1.Id = _connection.Insert(person1);
 
-            var p2 = _connection.Select<Person>(new { Id = p.Id }).SingleOrDefault();
+            var p2 = _connection.Select<Person>(p => p.Id == person1.Id).SingleOrDefault();
 
-            Assert.AreEqual(p, p2);
+            Assert.AreEqual(person1, p2);
         }
 
         #endregion // Insert
@@ -106,38 +108,38 @@ namespace Norm.Tests
         [Category("Update")]
         public void Update_ReturnsTrue()
         {
-            Person p = _connection.Select<Person>(new { Id = VALID_ID }).SingleOrDefault();
+            Person person = _connection.Select<Person>(p => p.Id == VALID_ID).SingleOrDefault();
 
-            p.FirstName = TestHelpers.GetRandomString(20);
-            p.LastName = TestHelpers.GetRandomString(20);
+            person.FirstName = TestHarness.GetRandomString(20);
+            person.LastName = TestHarness.GetRandomString(20);
 
-            Assert.IsTrue(_connection.Update(p));
+            Assert.IsTrue(_connection.Update(person));
         }
 
         [Test]
         [Category("Update")]
         public void Update_RecordNotExists_ReturnsFalse()
         {
-            var p = Person.Random();
-            p.Id = INVALID_ID;
+            var person = Person.Random();
+            person.Id = INVALID_ID;
             
-            Assert.IsFalse(_connection.Update(p));
+            Assert.IsFalse(_connection.Update(person));
         }
 
         [Test]
         [Category("Update")]
         public void Update_GetById_ReturnsEqualObject()
         {
-            Person p = _connection.Select<Person>(new { Id = VALID_ID }).SingleOrDefault();
+            Person person1 = _connection.Select<Person>(p => p.Id == VALID_ID).SingleOrDefault();
 
-            p.FirstName = TestHelpers.GetRandomString(20);
-            p.LastName = TestHelpers.GetRandomString(20);
+            person1.FirstName = TestHarness.GetRandomString(20);
+            person1.LastName = TestHarness.GetRandomString(20);
 
-            _connection.Update(p);
+            _connection.Update(person1);
 
-            Person p2 = _connection.Select<Person>(new { Id = VALID_ID }).SingleOrDefault();
+            Person person2 = _connection.Select<Person>(p => p.Id == VALID_ID).SingleOrDefault();
 
-            Assert.AreEqual(p, p2);
+            Assert.AreEqual(person1, person2);
         }
 
         #endregion // Update
@@ -148,33 +150,33 @@ namespace Norm.Tests
         [Category("Delete")]
         public void Delete_ReturnsTrue()
         {
-            var p = Person.Random();
-            p.Id = _connection.Insert(p);
+            var person = Person.Random();
+            person.Id = _connection.Insert(person);
 
-            Assert.IsTrue(_connection.Delete(p));
+            Assert.IsTrue(_connection.Delete(person));
         }
 
         [Test]
         [Category("Delete")]
         public void Delete_RecordNotExists_ReturnsFalse()
         {
-            var p = Person.Random();
-            p.Id = INVALID_ID;
+            var person = Person.Random();
+            person.Id = INVALID_ID;
 
-            Assert.IsFalse(_connection.Delete(p));
+            Assert.IsFalse(_connection.Delete(person));
         }
 
         [Test]
         [Category("Delete")]
         public void Delete_GetById_ReturnsNull()
         {
-            var p = Person.Random();
-            p.Id = _connection.Insert(p);
-            _connection.Delete(p);
+            var person1 = Person.Random();
+            person1.Id = _connection.Insert(person1);
+            _connection.Delete(person1);
 
-            var p2 = _connection.Select<Person>(new { Id = p.Id }).SingleOrDefault();
+            var person2 = _connection.Select<Person>(p => p.Id == person1.Id).SingleOrDefault();
 
-            Assert.IsNull(p2);
+            Assert.IsNull(person2);
         }
 
         #endregion // Delete

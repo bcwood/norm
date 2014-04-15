@@ -15,10 +15,10 @@ Norm includes 4 extension methods on the `IDbConnection` class: [Select<T>](#sel
 
 ### <a name="select">Select<T>
 
-The `Select` method returns a mapped list of `T` objects matching the given `parameters`.
+The `Select` method returns a mapped list of `T` objects matching the given `expression`.
 
 ```csharp
-public static IEnumerable<T> Select<T>(this IDbConnection connection, object parameters = null)
+public static IEnumerable<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> expression = null)
 ```
 
 Example usage:
@@ -39,7 +39,7 @@ public class Person
 IEnumerable<Person> people = connection.Select<Person>();
 
 // select one
-Person person = connection.Select<Person>(new { Id = 1 }).SingleOrDefault();
+Person person = connection.Select<Person>(p => p.Id == 1).SingleOrDefault();
 ```
 
 ### <a name="insert">Insert

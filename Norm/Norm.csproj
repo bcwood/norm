@@ -42,6 +42,7 @@
     <Compile Include="ConnectionExtensions.cs" />
     <Compile Include="DataReaderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryBuilder.cs" />
     <Compile Include="TypeConverter.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
