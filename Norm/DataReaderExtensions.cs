@@ -31,7 +31,7 @@ namespace Norm
                     {
                         object value = TypeConverter.ConvertToType(reader[propertyName], property.PropertyType);
                         
-                        property.SetValue(obj, value);
+                        property.SetValue(obj, value, null);
                     }
                 }
 

@@ -82,7 +82,7 @@ namespace Norm
                 if (_createdFields.Contains(property.Name.ToLower()))
                 {
                     p.Value = DateTime.Now;
-                    property.SetValue(obj, p.Value);
+                    property.SetValue(obj, p.Value, null);
                 }
                 else
                 {
@@ -144,7 +144,7 @@ namespace Norm
                 if (_updatedFields.Contains(property.Name.ToLower()))
                 {
                     p.Value = DateTime.Now;
-                    property.SetValue(obj, p.Value);
+                    property.SetValue(obj, p.Value, null);
                 }
                 else
                 {
