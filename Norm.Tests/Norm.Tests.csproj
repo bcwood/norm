@@ -50,7 +50,10 @@
   <ItemGroup>
     <Compile Include="ConnectionExtensionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryBuilderTests.cs" />
+    <Compile Include="QueryBuilder\DeleteBuilderTests.cs" />
+    <Compile Include="QueryBuilder\InsertBuilderTests.cs" />
+    <Compile Include="QueryBuilder\SelectBuilderTests.cs" />
+    <Compile Include="QueryBuilder\UpdateBuilderTests.cs" />
     <Compile Include="TestHarness.cs" />
     <Compile Include="TypeConverterTests.cs" />
     <Compile Include="TypeExtensionTests.cs" />

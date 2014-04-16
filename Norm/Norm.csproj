@@ -40,10 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QueryBuilder\BaseQueryBuilder.cs" />
+    <Compile Include="QueryBuilder\DeleteBuilder.cs" />
+    <Compile Include="QueryBuilder\InsertBuilder.cs" />
     <Compile Include="ConnectionExtensions.cs" />
     <Compile Include="DataReaderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryBuilder.cs" />
+    <Compile Include="QueryBuilder\SelectBuilder.cs" />
+    <Compile Include="QueryBuilder\SqlExpressionVisitor.cs" />
+    <Compile Include="QueryBuilder\UpdateBuilder.cs" />
     <Compile Include="TypeConverter.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>

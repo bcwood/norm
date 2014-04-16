@@ -1,14 +1,15 @@
 ﻿using NUnit.Framework;
+using Norm.QueryBuilder;
 
-namespace Norm.Tests
+namespace Norm.Tests.QueryBuilder
 {
     [TestFixture]
-    public class QueryBuilderTests
+    public class SelectBuilderTests
     {
         [Test]
-        public void QueryBuilder_NoParameters()
+        public void SelectBuilder_NoParameters()
         {
-            var qb = new QueryBuilder<Person>();
+            var qb = new SelectBuilder<Person>();
 
             Assert.AreEqual(0, qb.Parameters.Count);
             Assert.AreEqual("SELECT * FROM [Person]", qb.ToSqlString());
@@ -18,9 +19,9 @@ namespace Norm.Tests
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_Equal()
+        public void SelectBuilder_Int_Equal()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id == 1);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id == 1);
 
             Assert.AreEqual(1, qb.Parameters.Count);
             Assert.IsTrue(qb.Parameters.ContainsKey("Id"));
@@ -30,55 +31,55 @@ namespace Norm.Tests
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_LessThan()
+        public void SelectBuilder_Int_LessThan()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id < 1);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id < 1);
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [Id] < @Id", qb.ToSqlString());
         }
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_LessThanOrEqual()
+        public void SelectBuilder_Int_LessThanOrEqual()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id <= 1);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id <= 1);
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [Id] <= @Id", qb.ToSqlString());
         }
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_GreaterThan()
+        public void SelectBuilder_Int_GreaterThan()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id > 1);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id > 1);
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [Id] > @Id", qb.ToSqlString());
         }
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_GreaterThanOrEqual()
+        public void SelectBuilder_Int_GreaterThanOrEqual()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id >= 1);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id >= 1);
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [Id] >= @Id", qb.ToSqlString());
         }
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_NotEqual()
+        public void SelectBuilder_Int_NotEqual()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id != 1);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id != 1);
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [Id] <> @Id", qb.ToSqlString());
         }
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_Equal_VariableParameter()
+        public void SelectBuilder_Int_Equal_VariableParameter()
         {
             int id = 1;
-            var qb = new QueryBuilder<Person>().Where(p => p.Id == id);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id == id);
 
             Assert.AreEqual(1, qb.Parameters.Count);
             Assert.IsTrue(qb.Parameters.ContainsKey("Id"));
@@ -88,10 +89,10 @@ namespace Norm.Tests
 
         [Test]
         [Category("Int")]
-        public void QueryBuilder_Int_Equal_MemberParameter()
+        public void SelectBuilder_Int_Equal_MemberParameter()
         {
             var person = new Person { Id = 1 };
-            var qb = new QueryBuilder<Person>().Where(p => p.Id == person.Id);
+            var qb = new SelectBuilder<Person>().Where(p => p.Id == person.Id);
 
             Assert.AreEqual(1, qb.Parameters.Count);
             Assert.IsTrue(qb.Parameters.ContainsKey("Id"));
@@ -105,9 +106,9 @@ namespace Norm.Tests
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_Equal()
+        public void SelectBuilder_String_Equal()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.FirstName == "John");
+            var qb = new SelectBuilder<Person>().Where(p => p.FirstName == "John");
 
             Assert.AreEqual(1, qb.Parameters.Count);
             Assert.IsTrue(qb.Parameters.ContainsKey("FirstName"));
@@ -117,72 +118,72 @@ namespace Norm.Tests
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_NotEqual()
+        public void SelectBuilder_String_NotEqual()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.FirstName != "John");
+            var qb = new SelectBuilder<Person>().Where(p => p.FirstName != "John");
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [FirstName] <> @FirstName", qb.ToSqlString());
         }
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_StartsWith()
+        public void SelectBuilder_String_StartsWith()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.FirstName.StartsWith("J"));
+            var qb = new SelectBuilder<Person>().Where(p => p.FirstName.StartsWith("J"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [FirstName] LIKE @FirstName + '%'", qb.ToSqlString());
         }
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_NotStartsWith()
+        public void SelectBuilder_String_NotStartsWith()
         {
-            var qb = new QueryBuilder<Person>().Where(p => !p.FirstName.StartsWith("J"));
+            var qb = new SelectBuilder<Person>().Where(p => !p.FirstName.StartsWith("J"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE NOT ([FirstName] LIKE @FirstName + '%')", qb.ToSqlString());
         }
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_EndsWith()
+        public void SelectBuilder_String_EndsWith()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.FirstName.EndsWith("n"));
+            var qb = new SelectBuilder<Person>().Where(p => p.FirstName.EndsWith("n"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [FirstName] LIKE '%' + @FirstName", qb.ToSqlString());
         }
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_NotEndsWith()
+        public void SelectBuilder_String_NotEndsWith()
         {
-            var qb = new QueryBuilder<Person>().Where(p => !p.FirstName.EndsWith("n"));
+            var qb = new SelectBuilder<Person>().Where(p => !p.FirstName.EndsWith("n"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE NOT ([FirstName] LIKE '%' + @FirstName)", qb.ToSqlString());
         }
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_Contains()
+        public void SelectBuilder_String_Contains()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.FirstName.Contains("o"));
+            var qb = new SelectBuilder<Person>().Where(p => p.FirstName.Contains("o"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [FirstName] LIKE '%' + @FirstName + '%'", qb.ToSqlString());
         }
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_NotContains()
+        public void SelectBuilder_String_NotContains()
         {
-            var qb = new QueryBuilder<Person>().Where(p => !p.FirstName.Contains("o"));
+            var qb = new SelectBuilder<Person>().Where(p => !p.FirstName.Contains("o"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE NOT ([FirstName] LIKE '%' + @FirstName + '%')", qb.ToSqlString());
         }
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_IsNullOrEmpty()
+        public void SelectBuilder_String_IsNullOrEmpty()
         {
-            var qb = new QueryBuilder<Person>().Where(p => string.IsNullOrEmpty(p.FirstName));
+            var qb = new SelectBuilder<Person>().Where(p => string.IsNullOrEmpty(p.FirstName));
 
             Assert.AreEqual(0, qb.Parameters.Count);
             Assert.AreEqual("SELECT * FROM [Person] WHERE ([FirstName] IS NULL OR [FirstName] = '')", qb.ToSqlString());
@@ -190,9 +191,9 @@ namespace Norm.Tests
 
         [Test]
         [Category("String")]
-        public void QueryBuilder_String_EqualsNull()
+        public void SelectBuilder_String_EqualsNull()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.FirstName == null);
+            var qb = new SelectBuilder<Person>().Where(p => p.FirstName == null);
 
             Assert.AreEqual(0, qb.Parameters.Count);
             Assert.AreEqual("SELECT * FROM [Person] WHERE [FirstName] IS NULL", qb.ToSqlString());
@@ -204,9 +205,9 @@ namespace Norm.Tests
 
         [Test]
         [Category("Multi")]
-        public void QueryBuilder_MultiParam()
+        public void SelectBuilder_MultiParam()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id == 1 && p.FirstName == "John");
+            var qb = new SelectBuilder<Person>().Where(p => p.Id == 1 && p.FirstName == "John");
 
             Assert.AreEqual(2, qb.Parameters.Count);
             Assert.IsTrue(qb.Parameters.ContainsKey("Id"));
@@ -218,27 +219,27 @@ namespace Norm.Tests
 
         [Test]
         [Category("Multi")]
-        public void QueryBuilder_MultiParam_StartsWith()
+        public void SelectBuilder_MultiParam_StartsWith()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id == 1 && p.FirstName.StartsWith("John"));
+            var qb = new SelectBuilder<Person>().Where(p => p.Id == 1 && p.FirstName.StartsWith("John"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [Id] = @Id AND [FirstName] LIKE @FirstName + '%'", qb.ToSqlString());
         }
 
         [Test]
         [Category("Multi")]
-        public void QueryBuilder_MultiParam_NotEqual()
+        public void SelectBuilder_MultiParam_NotEqual()
         {
-            var qb = new QueryBuilder<Person>().Where(p => p.Id != 1 || p.FirstName != "John");
+            var qb = new SelectBuilder<Person>().Where(p => p.Id != 1 || p.FirstName != "John");
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE [Id] <> @Id OR [FirstName] <> @FirstName", qb.ToSqlString());
         }
 
         [Test]
         [Category("Multi")]
-        public void QueryBuilder_MultiParam_OuterNot()
+        public void SelectBuilder_MultiParam_OuterNot()
         {
-            var qb = new QueryBuilder<Person>().Where(p => !(p.Id == 1 && p.FirstName == "John"));
+            var qb = new SelectBuilder<Person>().Where(p => !(p.Id == 1 && p.FirstName == "John"));
 
             Assert.AreEqual("SELECT * FROM [Person] WHERE NOT ([Id] = @Id AND [FirstName] = @FirstName)", qb.ToSqlString());
         }

@@ -3,52 +3,26 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Norm
+namespace Norm.QueryBuilder
 {
-    public class QueryBuilder<T> : ExpressionVisitor
+    // ExpressionVisitor implementation adapted from the IQueryable Toolkit: http://blogs.msdn.com/b/mattwar/archive/2008/11/18/linq-links.aspx
+    public class SqlExpressionVisitor : ExpressionVisitor
     {
         public Dictionary<string, object> Parameters { get; private set; }
         
-        private StringBuilder _builder;
+        private StringBuilder _queryBuilder;
         private string _currentParamName;
 
-        public QueryBuilder()
+        public SqlExpressionVisitor()
         {
-            _builder = new StringBuilder();
             this.Parameters = new Dictionary<string, object>();
-
-            this.Append(string.Format("SELECT * FROM [{0}]", typeof(T).Name));
-        }
-
-        public QueryBuilder<T> Where(Expression<Func<T, bool>> expression)
-        {
-            if (expression != null)
-            {
-                this.Append(" WHERE ");
-                this.Visit(expression);
-            }
-
-            return this;
+            _queryBuilder = new StringBuilder();
         }
 
         public string ToSqlString()
         {
-            return _builder.ToString();
+            return _queryBuilder.ToString();
         }
-
-        private void Append(object p_value)
-        {
-            _builder.Append(p_value);
-        }
-
-        private void Append(string format, params object[] args)
-        {
-            _builder.AppendFormat(format, args);
-        }
-
-        #region ExpressionVisitor overrides
-
-        // ExpressionVisitor implementation adapted from the IQueryable Toolkit: http://blogs.msdn.com/b/mattwar/archive/2008/11/18/linq-links.aspx
 
         protected override Expression VisitMember(MemberExpression m)
         {
@@ -58,7 +32,7 @@ namespace Norm
                 {
                     case ExpressionType.Parameter:
                         _currentParamName = m.Member.Name;
-                        this.Append("[{0}]", _currentParamName);
+                        _queryBuilder.AppendFormat("[{0}]", _currentParamName);
                         return m;
                     case ExpressionType.MemberAccess:
                     case ExpressionType.Constant:
@@ -83,11 +57,11 @@ namespace Norm
         {
             if (value == null || value == DBNull.Value)
             {
-                this.Append("NULL");
+                _queryBuilder.Append("NULL");
             }
             else
             {
-                this.Append("@{0}", _currentParamName);
+                _queryBuilder.AppendFormat("@{0}", _currentParamName);
                 this.Parameters.Add(_currentParamName, value);
             }
         }
@@ -100,27 +74,27 @@ namespace Norm
                 {
                     case "StartsWith":
                         this.Visit(m.Object);
-                        this.Append(" LIKE ");
+                        _queryBuilder.Append(" LIKE ");
                         this.Visit(m.Arguments[0]);
-                        this.Append(" + '%'");
+                        _queryBuilder.Append(" + '%'");
                         return m;
                     case "EndsWith":
                         this.Visit(m.Object);
-                        this.Append(" LIKE '%' + ");
+                        _queryBuilder.Append(" LIKE '%' + ");
                         this.Visit(m.Arguments[0]);
                         return m;
                     case "Contains":
                         this.Visit(m.Object);
-                        this.Append(" LIKE '%' + ");
+                        _queryBuilder.Append(" LIKE '%' + ");
                         this.Visit(m.Arguments[0]);
-                        this.Append(" + '%'");
+                        _queryBuilder.Append(" + '%'");
                         return m;
                     case "IsNullOrEmpty":
-                        this.Append("(");
+                        _queryBuilder.Append("(");
                         this.Visit(m.Arguments[0]);
-                        this.Append(" IS NULL OR ");
+                        _queryBuilder.Append(" IS NULL OR ");
                         this.Visit(m.Arguments[0]);
-                        this.Append(" = '')");
+                        _queryBuilder.Append(" = '')");
                         return m;
                 }
             }
@@ -136,33 +110,33 @@ namespace Norm
             {
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
-                    this.Append(" AND ");
+                    _queryBuilder.Append(" AND ");
                     break;
                 case ExpressionType.Or:
                 case ExpressionType.OrElse:
-                    this.Append(" OR ");
+                    _queryBuilder.Append(" OR ");
                     break;
                 case ExpressionType.Equal:
                     var c = b.Right as ConstantExpression;
                     if (c != null && c.Value == null)
-                        this.Append(" IS ");
+                        _queryBuilder.Append(" IS ");
                     else
-                        this.Append(" = ");
+                        _queryBuilder.Append(" = ");
                     break;
                 case ExpressionType.NotEqual:
-                    this.Append(" <> ");
+                    _queryBuilder.Append(" <> ");
                     break;
                 case ExpressionType.LessThan:
-                    this.Append(" < ");
+                    _queryBuilder.Append(" < ");
                     break;
                 case ExpressionType.LessThanOrEqual:
-                    this.Append(" <= ");
+                    _queryBuilder.Append(" <= ");
                     break;
                 case ExpressionType.GreaterThan:
-                    this.Append(" > ");
+                    _queryBuilder.Append(" > ");
                     break;
                 case ExpressionType.GreaterThanOrEqual:
-                    this.Append(" >= ");
+                    _queryBuilder.Append(" >= ");
                     break;
                 default:
                     throw new NotSupportedException(string.Format("The binary operator '{0}' is not supported", b.NodeType));
@@ -178,9 +152,9 @@ namespace Norm
             switch (u.NodeType)
             {
                 case ExpressionType.Not:
-                    this.Append("NOT (");
+                    _queryBuilder.Append("NOT (");
                     this.Visit(u.Operand);
-                    this.Append(")");
+                    _queryBuilder.Append(")");
                     break;
                 default:
                     throw new NotSupportedException(string.Format("The unary operator '{0}' is not supported", u.NodeType));
@@ -188,7 +162,5 @@ namespace Norm
 
             return u;
         }
-
-        #endregion // ExpressionVisitor overrides
     }
 }

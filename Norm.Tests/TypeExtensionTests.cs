@@ -33,12 +33,11 @@ namespace Norm.Tests
 
         [Test]
         [Category("GetPrimaryKey")]
-        public void GetPrimaryKey_PersonNoPk_ReturnsNull()
+        public void GetPrimaryKey_PersonNoPk_ThrowsException()
         {
             Type type = typeof(PersonNoPk);
-            PropertyInfo primaryKey = type.GetPrimaryKey();
-
-            Assert.IsNull(primaryKey);
+            
+            Assert.Throws<Exception>(() => type.GetPrimaryKey());
         }
 
         #endregion // GetPrimaryKey
