@@ -8,7 +8,7 @@
 
             base.Parameters.Add(base.PrimaryKey.Name, primaryKeyValue);
 
-            base.Append("DELETE FROM [{0}] WHERE [{1}] = @{1}",
+            base.Append("DELETE FROM [{0}] WHERE [{1}]=@{1}",
                         base.Type.Name, base.PrimaryKey.Name);
         }
     }

@@ -21,7 +21,7 @@ namespace Norm.QueryBuilder
                     continue;
 
                 if (!base.IsPrimaryKey(paramName))
-                    setList.Add(string.Format("[{0}] = @{0}", paramName));
+                    setList.Add(string.Format("[{0}]=@{0}", paramName));
 
                 if (base.IsUpdateDateField(paramName))
                 {
@@ -40,7 +40,7 @@ namespace Norm.QueryBuilder
                 base.Parameters.Add(paramName, paramValue);
             }
 
-            base.Append("UPDATE [{0}] SET {1} WHERE [{2}] = @{2}",
+            base.Append("UPDATE [{0}] SET {1} WHERE [{2}]=@{2}",
                         base.Type.Name, string.Join(",", setList), base.PrimaryKey.Name);
         }
     }

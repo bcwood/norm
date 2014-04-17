@@ -81,7 +81,7 @@ namespace Norm.Tests
         // mapped directly to db fields
         public int Id { get; set; }
         public string FirstName { get; set; }
-        public char MiddleInitial { get; set; }
+        public char? MiddleInitial { get; set; }
         public string LastName { get; set; }
         public char Gender { get; set; }
         public DateTime CreateDate { get; set; }

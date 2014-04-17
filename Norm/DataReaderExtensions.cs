@@ -30,7 +30,6 @@ namespace Norm
                     if (property != null)
                     {
                         object value = TypeConverter.ConvertToType(reader[propertyName], property.PropertyType);
-                        
                         property.SetValue(obj, value, null);
                     }
                 }
