@@ -8,10 +8,14 @@ namespace Norm.Tests
     {
         [TestCase(typeof(String), TestName = "String")]
         [TestCase(typeof(Int32), TestName = "Int32")]
+        [TestCase(typeof(Int32?), TestName = "Int32?")]
         [TestCase(typeof(Decimal), TestName = "Decimal")]
+        [TestCase(typeof(Decimal?), TestName = "Decimal?")]
         [TestCase(typeof(Double), TestName = "Double")]
+        [TestCase(typeof(Double?), TestName = "Double?")]
         [TestCase(typeof(Boolean), TestName = "Boolean")]
         [TestCase(typeof(Char), TestName = "Char")]
+        [TestCase(typeof(Char?), TestName = "Char?")]
         [TestCase(typeof(Guid), TestName = "Guid")]
         [TestCase(typeof(DateTime), TestName = "DateTime")]
         [TestCase(typeof(DateTime?), TestName = "DateTime?")]
@@ -23,19 +27,22 @@ namespace Norm.Tests
 
         [TestCase("abcde", typeof(String), ExpectedResult = "abcde", TestName = "String")]
         [TestCase("123", typeof(Int32), ExpectedResult = 123, TestName = "Int32")]
+        [TestCase("123", typeof(Int32?), ExpectedResult = 123, TestName = "Int32?")]
         [TestCase("123.4", typeof(Decimal), ExpectedResult = 123.4, TestName = "Decimal")]
+        [TestCase("123.4", typeof(Decimal?), ExpectedResult = 123.4, TestName = "Decimal?")]
         [TestCase("123.4", typeof(Double), ExpectedResult = 123.4, TestName = "Double")]
+        [TestCase("123.4", typeof(Double?), ExpectedResult = 123.4, TestName = "Double?")]
         [TestCase("true", typeof(Boolean), ExpectedResult = true, TestName = "Boolean")]
         [TestCase("A", typeof(Char), ExpectedResult = 'A', TestName = "Char")]
-        [TestCase("1/2/2003", typeof(DateTime), ExpectedResult = "1/2/2003", TestName = "DateTime")]
-        [TestCase("2/3/2004", typeof(DateTime?), ExpectedResult = "2/3/2004", TestName = "DateTime?")]
+        [TestCase("A", typeof(Char?), ExpectedResult = 'A', TestName = "Char?")]
         [Category("TypeConversion")]
         public object ConvertToType_ReturnsCorrectlyConvertedType(object value, Type type)
         {
             return TypeConverter.ConvertToType(value, type);
         }
 
-        // testing conversion of a Guid doesn't really lend itself to the previous generic test, so we'll create a specific one
+        // testing of specific types that doesn't lend themselves to the previous generic tests
+
         [Test]
         [Category("TypeConversion")]
         public void ConvertToGuid_ReturnsEqualGuid()
@@ -45,6 +52,28 @@ namespace Norm.Tests
             object g2 = TypeConverter.ConvertToType(g1, typeof(Guid));
 
             Assert.AreEqual(g2, new Guid(g1.ToString()));
+        }
+
+        [Test]
+        [Category("TypeConversion")]
+        public void ConvertToDateTime_ReturnsEqualDateTime()
+        {
+            object d1 = "1/2/2013";
+
+            object d2 = TypeConverter.ConvertToType(d1, typeof(DateTime));
+
+            Assert.AreEqual(d2, DateTime.Parse(d1.ToString()));
+        }
+
+        [Test]
+        [Category("TypeConversion")]
+        public void ConvertToNullableDateTime_ReturnsEqualDateTime()
+        {
+            object d1 = "1/2/2013";
+
+            object d2 = TypeConverter.ConvertToType(d1, typeof(DateTime?));
+
+            Assert.AreEqual(d2, DateTime.Parse(d1.ToString()));
         }
     }
 }
