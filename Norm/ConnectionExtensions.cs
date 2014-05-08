@@ -13,9 +13,12 @@ namespace Norm
         /// </summary>
         /// <typeparam name="T">Type to query.</typeparam>
         /// <param name="connection">The database connection, which this method expects to already be open.</param>
-        /// <param name="where">Optional Expression for querying the type T.</param>
+        /// <param name="where">Expression for querying the type T (optional).</param>
+        /// <param name="orderBy">Expression for field to order by (optional).</param>
+        /// <param name="direction">Direction to sort (optional).</param>
+        /// <param name="top">Top # of records to return (optional).</param>
         /// <returns>Returns an enumerable list of T objects matching the select criteria.</returns>
-        public static IEnumerable<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> where = null) where T : new()
+        public static IEnumerable<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> where = null, Expression<Func<T, object>> orderBy = null, SortDirection direction = SortDirection.Asc, int? top = null) where T : new()
         {
             var queryBuilder = new SelectBuilder<T>();
             IDbCommand command = connection.CreateCommand();
@@ -25,6 +28,12 @@ namespace Norm
                 queryBuilder.Where(where);
                 LoadParameters(command, queryBuilder.Parameters);
             }
+
+            if (orderBy != null)
+                queryBuilder.OrderBy(orderBy, direction);
+
+            if (top != null)
+                queryBuilder.Top(top.Value);
 
             command.CommandText = queryBuilder.ToSqlString();
 

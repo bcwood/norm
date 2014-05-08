@@ -63,6 +63,15 @@ namespace Norm.Tests
 
         [Test]
         [Category("Select")]
+        public void Select_Top5_ReturnsListOfLength5()
+        {
+            IEnumerable<Person> list = _connection.Select<Person>(top: 5);
+
+            Assert.AreEqual(5, list.Count());
+        }
+
+        [Test]
+        [Category("Select")]
         public void Select_ById_500Iterations()
         {
             for (int i = 1; i <= 500; i++)
