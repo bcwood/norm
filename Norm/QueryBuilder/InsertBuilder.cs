@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Norm.QueryBuilder
 {
-    public class InsertBuilder : BaseQueryBuilder
+    internal class InsertBuilder : BaseQueryBuilder
     {
         public InsertBuilder(object obj) : base(obj.GetType())
         {

@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Norm
 {
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         /// <summary>
         /// Find the primary key for a given Type. 

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Norm.QueryBuilder
 {
-    public abstract class BaseQueryBuilder
+    internal abstract class BaseQueryBuilder : IQueryBuilder
     {
-        public Dictionary<string, object> Parameters { get; protected set; }
+        public Dictionary<string, object> Parameters { get; set; }
 
         protected Type Type { get; private set; }
         protected PropertyInfo PrimaryKey { get; private set; }

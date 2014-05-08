@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Norm
 {
-    public static class TypeConverter
+    internal static class TypeConverter
     {
         /// <summary>
         /// Convert an object to the given target type.

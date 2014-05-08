@@ -1,6 +1,6 @@
 ﻿namespace Norm.QueryBuilder
 {
-    public class DeleteBuilder : BaseQueryBuilder
+    internal class DeleteBuilder : BaseQueryBuilder
     {
         public DeleteBuilder(object obj) : base(obj.GetType())
         {

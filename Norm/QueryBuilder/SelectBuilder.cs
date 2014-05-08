@@ -4,54 +4,62 @@ using System.Linq.Expressions;
 
 namespace Norm.QueryBuilder
 {
-    public class SelectBuilder<T> : BaseQueryBuilder
+    internal class SelectBuilder<T> : BaseQueryBuilder where T : new()
     {
         private string _top;
         private string _where;
         private List<string> _orderByFields;
 
-        public SelectBuilder() : base(typeof(T))
+        public SelectBuilder(Expression<Func<T, bool>> where = null)
+            : base(typeof(T))
         {
             _orderByFields = new List<string>();
-        }
 
-        public SelectBuilder<T> Where(Expression<Func<T, bool>> expression)
-        {
-            if (expression != null)
+            if (where != null)
             {
                 var expressionVisitor = new SqlExpressionVisitor();
-                expressionVisitor.Visit(expression);
+                expressionVisitor.Visit(where);
 
                 _where = expressionVisitor.ToSqlString();
                 base.Parameters = expressionVisitor.Parameters;
             }
-
-            return this;
         }
 
-        public SelectBuilder<T> Top(int count)
+        public SelectBuilder<T> Limit(int count)
         {
             if (count <= 0)
-                throw new ArgumentException("TOP must be greater than 0.");
+                throw new ArgumentException("Limit must be greater than 0.");
 
             _top = string.Format("TOP {0} ", count);
 
             return this;
         }
 
-        public SelectBuilder<T> OrderBy(Expression<Func<T, object>> expression, SortDirection direction = SortDirection.Asc)
+        public SelectBuilder<T> OrderBy(Expression<Func<T, object>> orderBy)
         {
-            MemberExpression body = expression.Body as MemberExpression;
+            _orderByFields.Add(string.Format("[{0}]", GetOrderByFieldName(orderBy)));
+
+            return this;
+        }
+
+        public SelectBuilder<T> OrderByDesc(Expression<Func<T, object>> orderBy)
+        {
+            _orderByFields.Add(string.Format("[{0}] DESC", GetOrderByFieldName(orderBy)));
+
+            return this;
+        }
+
+        private string GetOrderByFieldName(Expression<Func<T, object>> orderBy)
+        {
+            MemberExpression body = orderBy.Body as MemberExpression;
 
             if (body == null)
             {
-                UnaryExpression ubody = (UnaryExpression) expression.Body;
+                UnaryExpression ubody = (UnaryExpression)orderBy.Body;
                 body = ubody.Operand as MemberExpression;
             }
 
-            _orderByFields.Add(string.Format("[{0}] {1}", body.Member.Name, direction.ToString().ToUpper()));
-
-            return this;
+            return body.Member.Name;
         }
 
         public override string ToSqlString()
@@ -67,11 +75,5 @@ namespace Norm.QueryBuilder
 
             return base.ToSqlString();
         }
-    }
-
-    public enum SortDirection
-    {
-        Asc,
-        Desc
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 namespace Norm.QueryBuilder
 {
     // ExpressionVisitor implementation adapted from the IQueryable Toolkit: http://blogs.msdn.com/b/mattwar/archive/2008/11/18/linq-links.aspx
-    public class SqlExpressionVisitor : ExpressionVisitor
+    internal class SqlExpressionVisitor : ExpressionVisitor
     {
         public Dictionary<string, object> Parameters { get; private set; }
         
