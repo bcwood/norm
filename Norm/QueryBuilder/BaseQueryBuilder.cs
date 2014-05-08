@@ -28,7 +28,7 @@ namespace Norm.QueryBuilder
             _excludedFields = new List<string>();
         }
 
-        public string ToSqlString()
+        public virtual string ToSqlString()
         {
             return _queryBuilder.ToString();
         }

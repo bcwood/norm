@@ -239,5 +239,40 @@ namespace Norm.Tests.QueryBuilder
         }
 
         #endregion // Multi Param
+
+        #region OrderBy
+
+        [Test]
+        [Category("OrderBy")]
+        public void Select_OrderBy_SingleField()
+        {
+            var query = new SelectBuilder<Person>().OrderBy(p => p.LastName);
+
+            Assert.AreEqual("SELECT * FROM [Person] ORDER BY [LastName] ASC", query.ToSqlString());
+        }
+
+        [Test]
+        [Category("OrderBy")]
+        public void Select_OrderBy_MultipleFields()
+        {
+            var query = new SelectBuilder<Person>()
+                                .OrderBy(p => p.LastName)
+                                .OrderBy(p => p.FirstName);
+
+            Assert.AreEqual("SELECT * FROM [Person] ORDER BY [LastName] ASC,[FirstName] ASC", query.ToSqlString());
+        }
+
+        [Test]
+        [Category("OrderBy")]
+        public void Select_OrderBy_MultipleFields_DifferentDirections()
+        {
+            var query = new SelectBuilder<Person>()
+                                .OrderBy(p => p.LastName, SortDirection.Desc)
+                                .OrderBy(p => p.FirstName);
+
+            Assert.AreEqual("SELECT * FROM [Person] ORDER BY [LastName] DESC,[FirstName] ASC", query.ToSqlString());
+        }
+
+        #endregion // OrderBy
     }
 }
