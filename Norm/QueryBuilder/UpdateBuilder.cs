@@ -14,11 +14,11 @@ namespace Norm.QueryBuilder
 
             foreach (PropertyInfo property in base.Type.GetCachedProperties())
             {
+                if (base.IsExcludedField(property.Name))
+                    continue;
+
                 string paramName = property.Name;
                 object paramValue = null;
-
-                if (base.IsExcludedField(paramName))
-                    continue;
 
                 if (!base.IsPrimaryKey(paramName))
                     setList.Add(string.Format("[{0}]=@{0}", paramName));

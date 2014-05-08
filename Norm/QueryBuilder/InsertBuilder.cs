@@ -16,11 +16,11 @@ namespace Norm.QueryBuilder
             
             foreach (PropertyInfo property in base.Type.GetCachedProperties())
             {
-                string paramName = property.Name;
-                object paramValue = null;
-
                 if (base.IsExcludedField(property.Name))
                     continue;
+
+                string paramName = property.Name;
+                object paramValue = null;
 
                 fieldList.Add("[" + paramName + "]");
                 valueList.Add("@" + paramName);
@@ -42,11 +42,10 @@ namespace Norm.QueryBuilder
             }
 
             base.Append("INSERT INTO [{0}] ({1})", base.Type.Name, string.Join(",", fieldList));
-            
+            base.Append(" VALUES ({0});", string.Join(",", valueList));
+
             // TODO: handle return of pk based on db provider type
-            base.Append(" OUTPUT INSERTED.[{0}]", base.PrimaryKey.Name);
-            
-            base.Append(" VALUES ({0})", string.Join(",", valueList));
+            base.Append(" SELECT SCOPE_IDENTITY();");
         }
     }
 }

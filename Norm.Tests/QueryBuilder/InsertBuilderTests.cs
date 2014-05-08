@@ -26,7 +26,7 @@ namespace Norm.Tests.QueryBuilder
             Assert.AreEqual(person.LastName, query.Parameters["LastName"]);
             Assert.AreEqual(person.Gender, query.Parameters["Gender"]);
             Assert.IsTrue(query.Parameters.ContainsKey("CreateDate"));
-            Assert.AreEqual("INSERT INTO [Person] ([FirstName],[MiddleInitial],[LastName],[Gender],[CreateDate]) OUTPUT INSERTED.[Id] VALUES (@FirstName,@MiddleInitial,@LastName,@Gender,@CreateDate)", query.ToSqlString());
+            Assert.AreEqual("INSERT INTO [Person] ([FirstName],[MiddleInitial],[LastName],[Gender],[CreateDate]) VALUES (@FirstName,@MiddleInitial,@LastName,@Gender,@CreateDate); SELECT SCOPE_IDENTITY();", query.ToSqlString());
         }
     }
 }
