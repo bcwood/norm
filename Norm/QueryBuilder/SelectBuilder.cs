@@ -12,8 +12,6 @@ namespace Norm.QueryBuilder
 
         public SelectBuilder() : base(typeof(T))
         {
-            //base.Append("SELECT * FROM [{0}]", typeof(T).Name);
-
             _orderByFields = new List<string>();
         }
 
