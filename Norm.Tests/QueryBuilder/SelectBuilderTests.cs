@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using Norm.QueryBuilder;
 
 namespace Norm.Tests.QueryBuilder
@@ -273,6 +274,41 @@ namespace Norm.Tests.QueryBuilder
             Assert.AreEqual("SELECT * FROM [Person] ORDER BY [LastName] DESC,[FirstName] ASC", query.ToSqlString());
         }
 
+        [Test]
+        [Category("String")]
+        [Category("OrderBy")]
+        public void Select_StringParam_OrderBy()
+        {
+            var query = new SelectBuilder<Person>()
+                                .Where(p => p.LastName == "Smith")
+                                .OrderBy(p => p.FirstName);
+
+            Assert.AreEqual("SELECT * FROM [Person] WHERE [LastName] = @LastName ORDER BY [FirstName] ASC", query.ToSqlString());
+        }
+
         #endregion // OrderBy
+
+        #region Top
+
+        [Test]
+        [Category("Top")]
+        public void Select_Top()
+        {
+            var query = new SelectBuilder<Person>()
+                                .Top(5)
+                                .Where(p => p.LastName == "Smith")
+                                .OrderBy(p => p.FirstName);
+
+            Assert.AreEqual("SELECT TOP 5 * FROM [Person] WHERE [LastName] = @LastName ORDER BY [FirstName] ASC", query.ToSqlString());
+        }
+
+        [Test]
+        [Category("Top")]
+        public void Select_Top_ZeroCount_ThrowsArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new SelectBuilder<Person>().Top(0));
+        }
+
+        #endregion // Top
     }
 }

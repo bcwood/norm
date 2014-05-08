@@ -6,11 +6,13 @@ namespace Norm.QueryBuilder
 {
     public class SelectBuilder<T> : BaseQueryBuilder
     {
+        private string _top;
+        private string _where;
         private List<string> _orderByFields;
 
         public SelectBuilder() : base(typeof(T))
         {
-            base.Append("SELECT * FROM [{0}]", typeof(T).Name);
+            //base.Append("SELECT * FROM [{0}]", typeof(T).Name);
 
             _orderByFields = new List<string>();
         }
@@ -19,14 +21,22 @@ namespace Norm.QueryBuilder
         {
             if (expression != null)
             {
-                base.Append(" WHERE ");
-
                 var expressionVisitor = new SqlExpressionVisitor();
                 expressionVisitor.Visit(expression);
 
-                base.Append(expressionVisitor.ToSqlString());
+                _where = expressionVisitor.ToSqlString();
                 base.Parameters = expressionVisitor.Parameters;
             }
+
+            return this;
+        }
+
+        public SelectBuilder<T> Top(int count)
+        {
+            if (count <= 0)
+                throw new ArgumentException("TOP must be greater than 0.");
+
+            _top = string.Format("TOP {0} ", count);
 
             return this;
         }
@@ -48,6 +58,12 @@ namespace Norm.QueryBuilder
 
         public override string ToSqlString()
         {
+            base.Append("SELECT {0}*", _top);
+            base.Append(" FROM [{0}]", typeof(T).Name);
+
+            if (!string.IsNullOrWhiteSpace(_where))
+                base.Append(" WHERE {0}", _where);
+
             if (_orderByFields.Count > 0)
                 base.Append(" ORDER BY {0}", string.Join(",", _orderByFields));
 
