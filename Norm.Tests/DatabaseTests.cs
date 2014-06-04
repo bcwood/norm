@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using NUnit.Framework;
 
@@ -29,7 +30,7 @@ namespace Norm.Tests
 
         #endregion // Setup/Teardown
 
-        #region Select
+		#region Select
 
         [Test]
         [Category("Select")]
@@ -71,6 +72,34 @@ namespace Norm.Tests
             Assert.AreEqual(5, list.Count());
         }
 
+	    [Test]
+	    [Category("Select")]
+	    public void Select_OrderBy()
+	    {
+			List<Person> list = _db.Select<Person>()
+											.OrderBy(p => p.Id)
+											.ToList().ToList();
+
+			for (int i = 0; i < list.Count - 1; i++)
+			{
+				Assert.Less(list[i].Id, list[i+1].Id);
+			}
+	    }
+
+		[Test]
+		[Category("Select")]
+		public void Select_OrderByDesc()
+		{
+			List<Person> list = _db.Select<Person>()
+											.OrderByDesc(p => p.Id)
+											.ToList().ToList();
+
+			for (int i = 0; i < list.Count - 1; i++)
+			{
+				Assert.Greater(list[i].Id, list[i + 1].Id);
+			}
+		}
+
         [Test]
         [Category("Select")]
         public void Select_ById_500Iterations()
@@ -84,6 +113,24 @@ namespace Norm.Tests
                 Assert.IsNotNull(person);
             }
         }
+
+		[Test]
+		[Category("Select")]
+		public void Select_UsingOpenConnection()
+		{
+			using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Norm.Tests"].ConnectionString))
+			{
+				conn.Open();
+
+				var db = new Norm.Database(conn);
+				Person person = db.Select<Person>(p => p.Id == VALID_ID)
+									.SingleOrDefault();
+
+				Assert.IsNotNull(person);
+
+				conn.Close();
+			}
+		}
 
         #endregion // Select
 

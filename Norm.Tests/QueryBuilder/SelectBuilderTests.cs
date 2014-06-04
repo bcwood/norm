@@ -186,6 +186,33 @@ namespace Norm.Tests.QueryBuilder
             Assert.AreEqual("SELECT * FROM [Person] WHERE ([FirstName] IS NULL OR [FirstName] = '')", query.ToSqlString());
         }
 
+		[Test]
+		[Category("String")]
+		public void Select_StringParam_ToUpper()
+		{
+			var query = new SelectBuilder<Person>(p => p.LastName.ToUpper() == "Smith".ToUpper());
+
+			Assert.AreEqual("SELECT * FROM [Person] WHERE UPPER([LastName]) = UPPER(@LastName)", query.ToSqlString());
+		}
+
+		[Test]
+		[Category("String")]
+		public void Select_StringParam_ToLower()
+		{
+			var query = new SelectBuilder<Person>(p => p.LastName.ToLower() == "Smith".ToLower());
+
+			Assert.AreEqual("SELECT * FROM [Person] WHERE LOWER([LastName]) = LOWER(@LastName)", query.ToSqlString());
+		}
+
+		[Test]
+		[Category("String")]
+		public void Select_StringParam_Trim()
+		{
+			var query = new SelectBuilder<Person>(p => p.LastName.Trim() == "Smith");
+
+			Assert.AreEqual("SELECT * FROM [Person] WHERE LTRIM(RTRIM([LastName])) = @LastName", query.ToSqlString());
+		}
+
         [Test]
         [Category("String")]
         public void Select_StringParam_EqualsNull()
@@ -307,5 +334,16 @@ namespace Norm.Tests.QueryBuilder
         }
 
         #endregion // Limit
-    }
+
+		#region Not Supported
+
+		[Test]
+		[Category("NotSupported")]
+		public void Select_StringParam_Substring_ThrowsNotSupportedException()
+		{
+			Assert.Throws<NotSupportedException>(() => new SelectBuilder<Person>(p => p.LastName.Substring(0, 3) == "Smi"));
+		}
+
+		#endregion // Not Supported
+	}
 }
