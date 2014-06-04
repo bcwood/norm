@@ -96,6 +96,21 @@ namespace Norm.QueryBuilder
                         this.Visit(m.Arguments[0]);
                         _queryBuilder.Append(" = '')");
                         return m;
+					case "ToUpper":
+						_queryBuilder.Append("UPPER(");
+						this.Visit(m.Object);
+						_queryBuilder.Append(")");
+						return m;
+					case "ToLower":
+						_queryBuilder.Append("LOWER(");
+						this.Visit(m.Object);
+						_queryBuilder.Append(")");
+						return m;
+					case "Trim":
+						_queryBuilder.Append("LTRIM(RTRIM(");
+						this.Visit(m.Object);
+						_queryBuilder.Append("))");
+						return m;
                 }
             }
 
